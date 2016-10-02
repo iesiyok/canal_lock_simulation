@@ -1,0 +1,23 @@
+
+INTRODUCTION
+This application simulates the process of a canal system of boats travelling through a canal and a lock.
+The lock acts like a gate standing between the canal and the outside area, and it has a chamber that can be filled or drained to allow vessel to travel upstream or downstream.
+
+IMPLEMENTATION
+To simulate this system, I defined different thread objects to run concurrently during the execution.
+Threads : Producer, Vessel Sender, Operator, Consumer, Tug, Launch Tug and Return Tug
+Objects : Lock, Vessel, Section[]
+In order to achieve the successful implementation, the running threads needs to work concurrently.
+However, almost all threads have common objects to access at random intervals and they need to be well organised.
+In order to achieve this goal, I decided to use 'lock' on the shared objects(Lock,Vessel,Section[]). When a thread accesses to a shared object it firstly locks the object so that other threads can not go into the object and make operations on it. The thread holding the lock will do its operations if conditions are provided. Otherwise, it will wait for the conditions are met and so execute its operations.
+The most challenging part of the program was deadlocks which occures when threads wait each other's operations to proceed their work.
+The locks on shared objects are not enough to solve this problem, because the program still has wait() and signal() operations. However, I solved this issue with using multiple locks when running operations for instance a Tug's task is to transfer vessels from one section to another and in order to do this, it will need to check the status of each sections. I acquired two different locks for these two sections and I always used a method to ensure the acquisition is succeeded. This method allows to get locks on objects, and if one of the acquisition is failed it releases the other locks, and waits for a short time and tries the operation again to ensure the lock is gained. This method mostly reduced the deadlocks, but there are some other cases to deadlocks occur in the system, for example, assume that a vessel is waiting in the last section, another vessel is waiting in the first section and it is waiting for next section, and there is another vessel waiting in the lock. Every vessel will wait and this problem will never be solved itself. Therefore, I needed to control the traffic(number of arriving and departing vessels). 
+The system is not depended on the time intervals, I tested manually for different time lapses and different section numbers.
+Note that, the system assumes that when a vessel arrives and comes into the lock, the chamber will be automatically filled in order to allow to vessel to transport and the system does not show any output for this filling operation, it only shows a log such as '[1] enters lock to go up', that means the chamber is filled during this operation. Likewise, when a vessel departs, the chamber will be automatically drained to allow to vessel to transport. These operations are not operator's tasks. Launch and Return tugs make this operations. 
+
+
+
+
+
+
+
